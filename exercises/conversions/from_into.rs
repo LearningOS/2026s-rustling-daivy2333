@@ -1,12 +1,3 @@
-// from_into.rs
-//
-// The From trait is used for value-to-value conversions. If From is implemented
-// correctly for a type, the Into trait should work conversely. You can read
-// more about it at https://doc.rust-lang.org/std/convert/trait.From.html
-//
-// Execute `rustlings hint from_into` or use the `hint` watch subcommand for a
-// hint.
-
 #[derive(Debug)]
 struct Person {
     name: String,
@@ -40,10 +31,40 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
-
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        // Step 1: Empty string check
+        if s.is_empty() {
+            return Person::default();
+        }
+
+        // Step 2: Split on commas
+        let parts: Vec<&str> = s.split(',').collect();
+
+        // We expect exactly 2 parts: "name" and "age". 
+        // The tests cover cases with missing parts, extra parts (trailing commas), etc.
+        if parts.len() != 2 {
+            return Person::default();
+        }
+
+        let name = parts[0];
+        let age_str = parts[1];
+
+        // Step 4: Check if name is empty
+        if name.is_empty() {
+            return Person::default();
+        }
+
+        // Step 5: Parse age
+        // If age_str is empty or not a valid usize, parse() will Err.
+        // Also handles cases like "Mark," where age_str is ""
+        match age_str.parse::<usize>() {
+            Ok(age) => Person {
+                name: String::from(name),
+                age,
+            },
+            Err(_) => Person::default(),
+        }
     }
 }
 

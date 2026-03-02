@@ -1,18 +1,3 @@
-// iterators5.rs
-//
-// Let's define a simple model to track Rustlings exercise progress. Progress
-// will be modelled using a hash map. The name of the exercise is the key and
-// the progress is the value. Two counting functions were created to count the
-// number of exercises with a given progress. Recreate this counting
-// functionality using iterators. Try not to use imperative loops (for, while).
-// Only the two iterator methods (count_iterator and count_collection_iterator)
-// need to be modified.
-//
-// Execute `rustlings hint iterators5` or use the `hint` watch subcommand for a
-// hint.
-
-// I AM NOT DONE
-
 use std::collections::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -35,7 +20,13 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
     // map is a hashmap with String keys and Progress values.
     // map = { "variables1": Complete, "from_str": None, ... }
-    todo!();
+    
+    // 1. Get an iterator over the values: map.values()
+    // 2. Filter values that equal the target 'value': .filter(|&v| v == &value)
+    //    Note: v is &&Progress because values() yields references, and the closure takes a reference.
+    // 3. Count the remaining items: .count()
+    map.values().filter(|&v| *v == value).count()
+    // Alternative syntax: .filter(|v| **v == value) or .filter(|v| v == &&value)
 }
 
 fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -52,9 +43,19 @@ fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progres
 
 fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
     // collection is a slice of hashmaps.
-    // collection = [{ "variables1": Complete, "from_str": None, ... },
-    //     { "variables2": Complete, ... }, ... ]
-    todo!();
+    
+    // 1. Iterate over the slice of maps: collection.iter()
+    // 2. For each map, get an iterator of its values: .map(|map| map.values())
+    // 3. Flatten these iterators into one single stream of values: .flat_map(...)
+    //    flat_map takes an iterator of iterators and flattens it.
+    // 4. Filter for the target value: .filter(|&v| *v == value)
+    // 5. Count: .count()
+    
+    collection
+        .iter()
+        .flat_map(|map| map.values())
+        .filter(|&v| *v == value)
+        .count()
 }
 
 #[cfg(test)]
